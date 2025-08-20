@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор Roblox Runtime</title>
+    <title>Roblox Runtime Calculator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #6a11cb;
-            --secondary: #2575fc;
-            --accent: #ff416c;
-            --light: #f8f9fa;
-            --dark: #212529;
+            --primary: #4a4e69;
+            --secondary: #9a8c98;
+            --accent: #c9ada7;
+            --light: #f2e9e4;
+            --dark: #22223b;
             --success: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
@@ -26,7 +26,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #22223b, #4a4e69, #9a8c98);
             color: var(--light);
             min-height: 100vh;
             padding: 20px;
@@ -51,7 +51,7 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            background: linear-gradient(to right, #c9ada7, #f2e9e4);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -309,9 +309,9 @@
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(106, 17, 203, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(74, 78, 105, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(74, 78, 105, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 78, 105, 0); }
         }
         
         footer {
@@ -319,26 +319,73 @@
             text-align: center;
             opacity: 0.7;
             font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        .credits {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .credits a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .credits a:hover {
+            color: var(--light);
+            text-decoration: underline;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            input[type="number"] {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-calculator"></i> Калькулятор Roblox Runtime</h1>
-            <p class="subtitle">Рассчитайте оптимальные значения параметров Roblox Runtime для улучшения производительности игры. Настройте параметры под вашу систему.</p>
+            <h1><i class="fas fa-calculator"></i> Roblox Runtime Calculator</h1>
+            <p class="subtitle">Calculate optimal Roblox Runtime values to improve game performance. Customize parameters for your system.</p>
         </header>
         
         <div class="calculator">
             <div class="input-section card">
-                <h2><i class="fas fa-sliders-h"></i> Параметры системы</h2>
+                <h2><i class="fas fa-sliders-h"></i> System Parameters</h2>
                 
                 <div class="form-group">
                     <label for="logicalProcessors">
-                        Количество логических процессоров 
+                        Number of Logical Processors 
                         <div class="tooltip">
                             <i class="fas fa-question-circle"></i>
-                            <span class="tooltiptext">Количество потоков вашего процессора. Обычно это: (Физические ядра) × 2, если включена технология Hyper-Threading</span>
+                            <span class="tooltiptext">Number of your CPU threads. Usually: (Physical Cores) × 2 if Hyper-Threading is enabled</span>
                         </div>
                     </label>
                     <input type="number" id="logicalProcessors" min="1" max="128" value="8">
@@ -350,10 +397,10 @@
                 
                 <div class="form-group">
                     <label for="multiplier">
-                        Множитель (рекомендуется 4)
+                        Multiplier (recommended: 4)
                         <div class="tooltip">
                             <i class="fas fa-question-circle"></i>
-                            <span class="tooltiptext">Начните с 4, если Roblox не запускается, уменьшайте до 3, 2 или 1</span>
+                            <span class="tooltiptext">Start with 4, if Roblox doesn't launch, decrease to 3, 2 or 1</span>
                         </div>
                     </label>
                     <input type="number" id="multiplier" min="1" max="10" value="4">
@@ -365,10 +412,10 @@
                 
                 <div class="form-group">
                     <label for="baseValue">
-                        Базовое значение (рекомендуется 100,000)
+                        Base Value (recommended: 100,000)
                         <div class="tooltip">
                             <i class="fas fa-question-circle"></i>
-                            <span class="tooltiptext">Если Roblox не запускается, уменьшайте это значение до 10,000 и далее</span>
+                            <span class="tooltiptext">If Roblox doesn't launch, decrease this value to 10,000 and so on</span>
                         </div>
                     </label>
                     <input type="number" id="baseValue" min="1000" max="1000000" value="100000">
@@ -379,13 +426,13 @@
                 </div>
                 
                 <button id="calculateBtn" class="btn btn-primary">
-                    <i class="fas fa-calculator"></i> Рассчитать значения
+                    <i class="fas fa-calculator"></i> Calculate Values
                 </button>
             </div>
             
             <div class="result-section card">
-                <h2><i class="fas fa-chart-line"></i> Результаты расчета</h2>
-                <p>Скопируйте эти значения в ваш конфигурационный файл Roblox:</p>
+                <h2><i class="fas fa-chart-line"></i> Calculation Results</h2>
+                <p>Copy these values to your Roblox configuration file:</p>
                 
                 <div class="results-grid" id="resultsContainer">
                     <!-- Results will be generated here -->
@@ -393,24 +440,28 @@
                 
                 <div class="copy-btn">
                     <button id="copyBtn" class="btn btn-secondary">
-                        <i class="fas fa-copy"></i> Скопировать все значения
+                        <i class="fas fa-copy"></i> Copy All Values
                     </button>
                 </div>
                 
                 <div class="instructions">
-                    <h3><i class="fas fa-info-circle"></i> Инструкция по использованию</h3>
+                    <h3><i class="fas fa-info-circle"></i> Usage Instructions</h3>
                     <ol>
-                        <li>Рассчитайте значения с помощью калькулятора</li>
-                        <li>Если Roblox не запускается, уменьшите множитель (4 → 3 → 2 → 1)</li>
-                        <li>Если все еще не запускается, уменьшите базовое значение (100,000 → 10,000 → 1,000)</li>
-                        <li>Найдите оптимальные значения для вашей системы</li>
+                        <li>Calculate values using the calculator</li>
+                        <li>If Roblox doesn't launch, decrease the multiplier (4 → 3 → 2 → 1)</li>
+                        <li>If it still doesn't launch, decrease the base value (100,000 → 10,000 → 1,000)</li>
+                        <li>Find the optimal values for your system</li>
                     </ol>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>© 2023 Калькулятор Roblox Runtime | Для игровых энтузиастов</p>
+            <p>© 2023 Roblox Runtime Calculator | For gaming enthusiasts</p>
+            <div class="credits">
+                <p>Calculator created by - <a href="https://discord.com/users/1401312555598614709" target="_blank">Oblyc</a></p>
+                <p>Fast Flags founded by - <a href="https://discord.com/users/1104189426374033519" target="_blank">Onion</a></p>
+            </div>
         </footer>
     </div>
 
@@ -543,16 +594,16 @@
                 
                 navigator.clipboard.writeText(output).then(() => {
                     // Show success feedback
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                     copyBtn.classList.add('pulse');
                     
                     setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Скопировать все значения';
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy All Values';
                         copyBtn.classList.remove('pulse');
                     }, 2000);
                 }).catch(err => {
                     console.error('Failed to copy: ', err);
-                    alert('Не удалось скопировать в буфер обмена');
+                    alert('Failed to copy to clipboard');
                 });
             }
             
