@@ -118,6 +118,13 @@
             color: white;
             font-size: 1rem;
             transition: var(--transition);
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         input[type="number"]:focus {
@@ -130,6 +137,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            margin-top: 10px;
         }
         
         input[type="range"] {
@@ -153,6 +161,22 @@
         
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
         }
         
         .btn {
@@ -366,6 +390,16 @@
                 padding: 10px 20px;
                 font-size: 0.9rem;
             }
+            
+            .slider-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .value-display {
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -391,7 +425,7 @@
                     <input type="number" id="logicalProcessors" min="1" max="128" value="8">
                     <div class="slider-container">
                         <input type="range" id="logicalProcessorsSlider" min="1" max="128" value="8" step="1">
-                        <span id="logicalProcessorsValue">8</span>
+                        <span class="value-display" id="logicalProcessorsValue">8</span>
                     </div>
                 </div>
                 
@@ -406,7 +440,7 @@
                     <input type="number" id="multiplier" min="1" max="10" value="4">
                     <div class="slider-container">
                         <input type="range" id="multiplierSlider" min="1" max="10" value="4" step="1">
-                        <span id="multiplierValue">4</span>
+                        <span class="value-display" id="multiplierValue">4</span>
                     </div>
                 </div>
                 
@@ -421,7 +455,7 @@
                     <input type="number" id="baseValue" min="1000" max="1000000" value="100000">
                     <div class="slider-container">
                         <input type="range" id="baseValueSlider" min="1000" max="1000000" value="100000" step="1000">
-                        <span id="baseValueValue">100,000</span>
+                        <span class="value-display" id="baseValueValue">100,000</span>
                     </div>
                 </div>
                 
@@ -457,7 +491,7 @@
         </div>
         
         <footer>
-            <p>$ Roblox Runtime Calculator | hello guys</p>
+            <p>© 2023 Roblox Runtime Calculator | For gaming enthusiasts</p>
             <div class="credits">
                 <p>Calculator created by - <a href="https://discord.com/users/1401312555598614709" target="_blank">Oblyc</a></p>
                 <p>Fast Flags founded by - <a href="https://discord.com/users/1104189426374033519" target="_blank">Onion</a></p>
@@ -466,73 +500,172 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const logicalProcessorsInput = document.getElementById('logicalProcessors');
-        const logicalProcessorsSlider = document.getElementById('logicalProcessorsSlider');
-        const logicalProcessorsValue = document.getElementById('logicalProcessorsValue');
-        
-        const multiplierInput = document.getElementById('multiplier');
-        const multiplierSlider = document.getElementById('multiplierSlider');
-        const multiplierValue = document.getElementById('multiplierValue');
-        
-        const baseValueInput = document.getElementById('baseValue');
-        const baseValueSlider = document.getElementById('baseValueSlider');
-        const baseValueValue = document.getElementById('baseValueValue');
-        
-        const calculateBtn = document.getElementById('calculateBtn');
-        const copyBtn = document.getElementById('copyBtn');
-        const resultsContainer = document.getElementById('resultsContainer');
-        
-        function formatNumber(num) {
-            return Number(num).toLocaleString('en-US');
-        }
-
-        function bindInputAndSlider(input, slider, valueElement, formatFunc = null) {
-            input.addEventListener('input', () => {
-                let val = parseInt(input.value) || 0;
-                if (val < parseInt(slider.min)) val = slider.min;
-                if (val > parseInt(slider.max)) val = slider.max;
-                slider.value = val;
-                valueElement.textContent = formatFunc ? formatFunc(val) : val;
-            });
-
-            slider.addEventListener('input', () => {
-                input.value = slider.value;
-                valueElement.textContent = formatFunc ? formatFunc(slider.value) : slider.value;
-            });
-
-            slider.dispatchEvent(new Event('input'));
-        }
-
-        bindInputAndSlider(logicalProcessorsInput, logicalProcessorsSlider, logicalProcessorsValue);
-        bindInputAndSlider(multiplierInput, multiplierSlider, multiplierValue);
-        bindInputAndSlider(baseValueInput, baseValueSlider, baseValueValue, formatNumber);
-
-        function calculateValues() {
-            const logicalProcessors = parseInt(logicalProcessorsInput.value);
-            const multiplier = parseInt(multiplierInput.value);
-            const baseValue = parseInt(baseValueInput.value);
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const logicalProcessorsInput = document.getElementById('logicalProcessors');
+            const logicalProcessorsSlider = document.getElementById('logicalProcessorsSlider');
+            const logicalProcessorsValue = document.getElementById('logicalProcessorsValue');
             
-            const calculatedValue = multiplier * logicalProcessors * baseValue;
-            resultsContainer.innerHTML = '';
+            const multiplierInput = document.getElementById('multiplier');
+            const multiplierSlider = document.getElementById('multiplierSlider');
+            const multiplierValue = document.getElementById('multiplierValue');
             
-            const parameters = [
-                "FIntRuntimeMaxNumOfConditions",
-                "FIntRuntimeMaxNumOfDPCs",
-                "FIntRuntimeMaxNumOfLatches",
-                "FIntRuntimeMaxNumOfMutexes",
-                "FIntRuntimeMaxNumOfSchedulers",
-                "FIntRuntimeMaxNumOfSemaphores",
-                "FIntRuntimeMaxNumOfStrands",
-                "FIntRuntimeMaxNumOfThreads"
-            ];
+            const baseValueInput = document.getElementById('baseValue');
+            const baseValueSlider = document.getElementById('baseValueSlider');
+            const baseValueValue = document.getElementById('baseValueValue');
             
-            parameters.forEach(param => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item fade-in';
+            const calculateBtn = document.getElementById('calculateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            // Format large numbers with commas
+            function formatNumber(num) {
+                return Number(num).toLocaleString('en-US');
+            }
+            
+            // Update value display and sync input with slider
+            function updateValue(input, slider, display, formatFunc = null) {
+                const value = input.value;
+                slider.value = value;
+                display.textContent = formatFunc ? formatFunc(value) : value;
+            }
+            
+            // Initialize all sliders and inputs
+            function initSlider(input, slider, display, formatFunc = null) {
+                // Set initial display value
+                display.textContent = formatFunc ? formatFunc(input.value) : input.value;
                 
-                const title = document.createElement('div');
-                title.className = 'result-title';
-                title.textContent = param;
+                // Update when input changes
+                input.addEventListener('input', function() {
+                    // Ensure value is within min and max
+                    const min = parseInt(input.min);
+                    const max = parseInt(input.max);
+                    let value = parseInt(input.value) || min;
+                    
+                    if (value < min) value = min;
+                    if (value > max) value = max;
+                    
+                    input.value = value;
+                    updateValue(input, slider, display, formatFunc);
+                });
                 
-                const value = document.create
+                // Update when slider changes
+                slider.addEventListener('input', function() {
+                    input.value = slider.value;
+                    display.textContent = formatFunc ? formatFunc(slider.value) : slider.value;
+                });
+            }
+            
+            // Initialize all sliders
+            initSlider(logicalProcessorsInput, logicalProcessorsSlider, logicalProcessorsValue);
+            initSlider(multiplierInput, multiplierSlider, multiplierValue);
+            initSlider(baseValueInput, baseValueSlider, baseValueValue, formatNumber);
+            
+            // Calculate the recommended values
+            function calculateValues() {
+                const logicalProcessors = parseInt(logicalProcessorsInput.value);
+                const multiplier = parseInt(multiplierInput.value);
+                const baseValue = parseInt(baseValueInput.value);
+                
+                const calculatedValue = multiplier * logicalProcessors * baseValue;
+                
+                // Clear previous results
+                resultsContainer.innerHTML = '';
+                
+                // Parameters to calculate
+                const parameters = [
+                    "FIntRuntimeMaxNumOfConditions",
+                    "FIntRuntimeMaxNumOfDPCs",
+                    "FIntRuntimeMaxNumOfLatches",
+                    "FIntRuntimeMaxNumOfMutexes",
+                    "FIntRuntimeMaxNumOfSchedulers",
+                    "FIntRuntimeMaxNumOfSemaphores",
+                    "FIntRuntimeMaxNumOfStrands",
+                    "FIntRuntimeMaxNumOfThreads"
+                ];
+                
+                // Create result items
+                parameters.forEach(param => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item fade-in';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'result-title';
+                    title.textContent = param;
+                    
+                    const value = document.createElement('div');
+                    value.className = 'result-value';
+                    value.textContent = formatNumber(calculatedValue);
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+                    
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    progressFill.style.width = `${Math.min(100, calculatedValue / 6400000 * 100)}%`;
+                    
+                    progressBar.appendChild(progressFill);
+                    
+                    resultItem.appendChild(title);
+                    resultItem.appendChild(value);
+                    resultItem.appendChild(progressBar);
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+            }
+            
+            // Copy values to clipboard
+            function copyToClipboard() {
+                const logicalProcessors = parseInt(logicalProcessorsInput.value);
+                const multiplier = parseInt(multiplierInput.value);
+                const baseValue = parseInt(baseValueInput.value);
+                
+                const calculatedValue = multiplier * logicalProcessors * baseValue;
+                
+                const parameters = [
+                    "FIntRuntimeMaxNumOfConditions",
+                    "FIntRuntimeMaxNumOfDPCs",
+                    "FIntRuntimeMaxNumOfLatches",
+                    "FIntRuntimeMaxNumOfMutexes",
+                    "FIntRuntimeMaxNumOfSchedulers",
+                    "FIntRuntimeMaxNumOfSemaphores",
+                    "FIntRuntimeMaxNumOfStrands",
+                    "FIntRuntimeMaxNumOfThreads"
+                ];
+                
+                let output = '{\n';
+                parameters.forEach((param, index) => {
+                    output += `    "${param}": "${formatNumber(calculatedValue)}"`;
+                    if (index < parameters.length - 1) {
+                        output += ',\n';
+                    } else {
+                        output += '\n';
+                    }
+                });
+                output += '}';
+                
+                navigator.clipboard.writeText(output).then(() => {
+                    // Show success feedback
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyBtn.classList.add('pulse');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy All Values';
+                        copyBtn.classList.remove('pulse');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy to clipboard');
+                });
+            }
+            
+            // Event listeners
+            calculateBtn.addEventListener('click', calculateValues);
+            copyBtn.addEventListener('click', copyToClipboard);
+            
+            // Calculate initial values on page load
+            calculateValues();
+        });
+    </script>
+</body>
+    </html>
