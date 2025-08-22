@@ -466,154 +466,73 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get DOM elements
-            const logicalProcessorsInput = document.getElementById('logicalProcessors');
-            const logicalProcessorsSlider = document.getElementById('logicalProcessorsSlider');
-            const logicalProcessorsValue = document.getElementById('logicalProcessorsValue');
+    document.addEventListener('DOMContentLoaded', function() {
+        const logicalProcessorsInput = document.getElementById('logicalProcessors');
+        const logicalProcessorsSlider = document.getElementById('logicalProcessorsSlider');
+        const logicalProcessorsValue = document.getElementById('logicalProcessorsValue');
+        
+        const multiplierInput = document.getElementById('multiplier');
+        const multiplierSlider = document.getElementById('multiplierSlider');
+        const multiplierValue = document.getElementById('multiplierValue');
+        
+        const baseValueInput = document.getElementById('baseValue');
+        const baseValueSlider = document.getElementById('baseValueSlider');
+        const baseValueValue = document.getElementById('baseValueValue');
+        
+        const calculateBtn = document.getElementById('calculateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        
+        function formatNumber(num) {
+            return Number(num).toLocaleString('en-US');
+        }
+
+        function bindInputAndSlider(input, slider, valueElement, formatFunc = null) {
+            input.addEventListener('input', () => {
+                let val = parseInt(input.value) || 0;
+                if (val < parseInt(slider.min)) val = slider.min;
+                if (val > parseInt(slider.max)) val = slider.max;
+                slider.value = val;
+                valueElement.textContent = formatFunc ? formatFunc(val) : val;
+            });
+
+            slider.addEventListener('input', () => {
+                input.value = slider.value;
+                valueElement.textContent = formatFunc ? formatFunc(slider.value) : slider.value;
+            });
+
+            slider.dispatchEvent(new Event('input'));
+        }
+
+        bindInputAndSlider(logicalProcessorsInput, logicalProcessorsSlider, logicalProcessorsValue);
+        bindInputAndSlider(multiplierInput, multiplierSlider, multiplierValue);
+        bindInputAndSlider(baseValueInput, baseValueSlider, baseValueValue, formatNumber);
+
+        function calculateValues() {
+            const logicalProcessors = parseInt(logicalProcessorsInput.value);
+            const multiplier = parseInt(multiplierInput.value);
+            const baseValue = parseInt(baseValueInput.value);
             
-            const multiplierInput = document.getElementById('multiplier');
-            const multiplierSlider = document.getElementById('multiplierSlider');
-            const multiplierValue = document.getElementById('multiplierValue');
+            const calculatedValue = multiplier * logicalProcessors * baseValue;
+            resultsContainer.innerHTML = '';
             
-            const baseValueInput = document.getElementById('baseValue');
-            const baseValueSlider = document.getElementById('baseValueSlider');
-            const baseValueValue = document.getElementById('baseValueValue');
+            const parameters = [
+                "FIntRuntimeMaxNumOfConditions",
+                "FIntRuntimeMaxNumOfDPCs",
+                "FIntRuntimeMaxNumOfLatches",
+                "FIntRuntimeMaxNumOfMutexes",
+                "FIntRuntimeMaxNumOfSchedulers",
+                "FIntRuntimeMaxNumOfSemaphores",
+                "FIntRuntimeMaxNumOfStrands",
+                "FIntRuntimeMaxNumOfThreads"
+            ];
             
-            const calculateBtn = document.getElementById('calculateBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const resultsContainer = document.getElementById('resultsContainer');
-            
-            // Sync input and slider values
-            function syncInputAndSlider(inputElement, sliderElement, valueElement, formatFunc = null) {
-                const updateValues = () => {
-                    sliderElement.value = inputElement.value;
-                    inputElement.value = sliderElement.value;
-                    valueElement.textContent = formatFunc ? formatFunc(sliderElement.value) : sliderElement.value;
-                };
+            parameters.forEach(param => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item fade-in';
                 
-                inputElement.addEventListener('input', updateValues);
-                sliderElement.addEventListener('input', updateValues);
+                const title = document.createElement('div');
+                title.className = 'result-title';
+                title.textContent = param;
                 
-                // Initial update
-                updateValues();
-            }
-            
-            // Format large numbers with commas
-            function formatNumber(num) {
-                return Number(num).toLocaleString('en-US');
-            }
-            
-            // Initialize sync between inputs and sliders
-            syncInputAndSlider(logicalProcessorsInput, logicalProcessorsSlider, logicalProcessorsValue);
-            syncInputAndSlider(multiplierInput, multiplierSlider, multiplierValue);
-            syncInputAndSlider(baseValueInput, baseValueSlider, baseValueValue, formatNumber);
-            
-            // Calculate the recommended values
-            function calculateValues() {
-                const logicalProcessors = parseInt(logicalProcessorsInput.value);
-                const multiplier = parseInt(multiplierInput.value);
-                const baseValue = parseInt(baseValueInput.value);
-                
-                const calculatedValue = multiplier * logicalProcessors * baseValue;
-                
-                // Clear previous results
-                resultsContainer.innerHTML = '';
-                
-                // Parameters to calculate
-                const parameters = [
-                    "FIntRuntimeMaxNumOfConditions",
-                    "FIntRuntimeMaxNumOfDPCs",
-                    "FIntRuntimeMaxNumOfLatches",
-                    "FIntRuntimeMaxNumOfMutexes",
-                    "FIntRuntimeMaxNumOfSchedulers",
-                    "FIntRuntimeMaxNumOfSemaphores",
-                    "FIntRuntimeMaxNumOfStrands",
-                    "FIntRuntimeMaxNumOfThreads"
-                ];
-                
-                // Create result items
-                parameters.forEach(param => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'result-item fade-in';
-                    
-                    const title = document.createElement('div');
-                    title.className = 'result-title';
-                    title.textContent = param;
-                    
-                    const value = document.createElement('div');
-                    value.className = 'result-value';
-                    value.textContent = formatNumber(calculatedValue);
-                    
-                    const progressBar = document.createElement('div');
-                    progressBar.className = 'progress-bar';
-                    
-                    const progressFill = document.createElement('div');
-                    progressFill.className = 'progress-fill';
-                    progressFill.style.width = `${Math.min(100, calculatedValue / 6400000 * 100)}%`;
-                    
-                    progressBar.appendChild(progressFill);
-                    
-                    resultItem.appendChild(title);
-                    resultItem.appendChild(value);
-                    resultItem.appendChild(progressBar);
-                    
-                    resultsContainer.appendChild(resultItem);
-                });
-            }
-            
-            // Copy values to clipboard
-            function copyToClipboard() {
-                const logicalProcessors = parseInt(logicalProcessorsInput.value);
-                const multiplier = parseInt(multiplierInput.value);
-                const baseValue = parseInt(baseValueInput.value);
-                
-                const calculatedValue = multiplier * logicalProcessors * baseValue;
-                
-                const parameters = [
-                    "FIntRuntimeMaxNumOfConditions",
-                    "FIntRuntimeMaxNumOfDPCs",
-                    "FIntRuntimeMaxNumOfLatches",
-                    "FIntRuntimeMaxNumOfMutexes",
-                    "FIntRuntimeMaxNumOfSchedulers",
-                    "FIntRuntimeMaxNumOfSemaphores",
-                    "FIntRuntimeMaxNumOfStrands",
-                    "FIntRuntimeMaxNumOfThreads"
-                ];
-                
-                let output = '{\n';
-                parameters.forEach((param, index) => {
-                    output += `    "${param}": "${formatNumber(calculatedValue)}"`;
-                    if (index < parameters.length - 1) {
-                        output += ',\n';
-                    } else {
-                        output += '\n';
-                    }
-                });
-                output += '}';
-                
-                navigator.clipboard.writeText(output).then(() => {
-                    // Show success feedback
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    copyBtn.classList.add('pulse');
-                    
-                    setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy All Values';
-                        copyBtn.classList.remove('pulse');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy to clipboard');
-                });
-            }
-            
-            // Event listeners
-            calculateBtn.addEventListener('click', calculateValues);
-            copyBtn.addEventListener('click', copyToClipboard);
-            
-            // Calculate initial values on page load
-            calculateValues();
-        });
-    </script>
-</body>
-</html>
+                const value = document.create
